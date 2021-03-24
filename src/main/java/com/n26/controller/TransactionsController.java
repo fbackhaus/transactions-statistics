@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "transactions", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -18,7 +20,7 @@ public class TransactionsController {
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Void> createNewTransaction(@RequestBody @Validated Transaction transaction) {
+    public ResponseEntity<Void> createNewTransaction(@Valid @RequestBody Transaction transaction) {
         transactionsService.createTransaction(transaction);
         return ResponseEntity.accepted().build();
     }
