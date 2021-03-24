@@ -1,5 +1,6 @@
 package com.n26.model;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -10,16 +11,16 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
-@ToString
+@Builder
 @ValidTransaction
 public class Transaction {
 
     @Valid
     @NotNull
-    private BigDecimal amount;
+    private final BigDecimal amount;
 
     @Valid
     @NotNull
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private LocalDateTime timestamp;
+    private final LocalDateTime timestamp;
 }
