@@ -18,25 +18,16 @@ public class TransactionValidationTest {
     private static Validator validator;
     private static DateTimeFormatter formatter;
 
+    private final static String TRANSACTION_AMOUNT_IS_NULL = "The transaction amount must be provided";
+    private final static String TRANSACTION_TIMESTAMP_IS_NULL = "The transaction timestamp must be provided";
+    private final static String TRANSACTION_TIMESTAMP_IS_IN_THE_FUTURE = "The transaction timestamp is in the future";
+    private final static String TRANSACTION_TIMESTAMP_IS_OLD = "The transaction timestamp is older than 60 seconds";
+
     @BeforeClass
     public static void setUp() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
         formatter = DateTimeFormatter.ISO_DATE_TIME;
-    }
-
-    @Test
-    public void validTransaction() {
-
-        Transaction transaction = Transaction.builder()
-                .amount(BigDecimal.valueOf(12.3343))
-                .timestamp(LocalDateTime.now())
-                .build();
-
-        Set<ConstraintViolation<Transaction>> constraintViolations =
-                validator.validate(transaction);
-
-        assertEquals(0, constraintViolations.size());
     }
 
     @Test
@@ -49,11 +40,11 @@ public class TransactionValidationTest {
         Set<ConstraintViolation<Transaction>> constraintViolations =
                 validator.validate(transaction);
 
-        assertEquals(1, constraintViolations.size());
-        assertEquals(
-                "must not be null",
-                constraintViolations.iterator().next().getMessage()
-        );
+        assertFalse(constraintViolations.isEmpty());
+
+        assertTrue(constraintViolations.stream()
+                .anyMatch(transactionConstraintViolation ->
+                        transactionConstraintViolation.getMessage().equals(TRANSACTION_AMOUNT_IS_NULL)));
     }
 
     @Test
@@ -66,33 +57,15 @@ public class TransactionValidationTest {
         Set<ConstraintViolation<Transaction>> constraintViolations =
                 validator.validate(transaction);
 
-        assertEquals(1, constraintViolations.size());
-        assertEquals(
-                "must not be null",
-                constraintViolations.iterator().next().getMessage()
-        );
+        assertFalse(constraintViolations.isEmpty());
+
+        assertTrue(constraintViolations.stream()
+                .anyMatch(transactionConstraintViolation ->
+                        transactionConstraintViolation.getMessage().equals(TRANSACTION_TIMESTAMP_IS_NULL)));
     }
 
     @Test
-    public void timestampHasADifferentFormat() {
-        String timeStampWithADifferentFormat = "2018-02-27 15:35:20.311";
-        Transaction transaction = Transaction.builder()
-                .amount(BigDecimal.valueOf(12.3343))
-                .timestamp(LocalDateTime.parse(timeStampWithADifferentFormat, formatter))
-                .build();
-
-        Set<ConstraintViolation<Transaction>> constraintViolations =
-                validator.validate(transaction);
-
-        assertEquals(1, constraintViolations.size());
-        assertEquals(
-                "must not be null",
-                constraintViolations.iterator().next().getMessage()
-        );
-    }
-
-    @Test
-    public void timestampHasTheCorrectFormat() {
+    public void timestampHasTheCorrectFormatButIsOld() {
         String timestampWithTheCorrectFormat = "2018-07-17T09:59:51.312Z";
         Transaction transaction = Transaction.builder()
                 .amount(BigDecimal.valueOf(12.3343))
@@ -102,11 +75,15 @@ public class TransactionValidationTest {
         Set<ConstraintViolation<Transaction>> constraintViolations =
                 validator.validate(transaction);
 
-        assertEquals(0, constraintViolations.size());
+        assertFalse(constraintViolations.isEmpty());
+
+        assertTrue(constraintViolations.stream()
+                .anyMatch(transactionConstraintViolation ->
+                        transactionConstraintViolation.getMessage().equals(TRANSACTION_TIMESTAMP_IS_OLD)));
     }
 
     @Test
-    public void transactionIsOlderThan60Seconds() {
+    public void transactionIsOlderThan60SecondsShouldFailValidation() {
         Transaction transaction = Transaction.builder()
                 .amount(BigDecimal.valueOf(12.3343))
                 .timestamp(LocalDateTime.now().minusSeconds(61))
@@ -115,11 +92,41 @@ public class TransactionValidationTest {
         Set<ConstraintViolation<Transaction>> constraintViolations =
                 validator.validate(transaction);
 
-        assertEquals(1, constraintViolations.size());
-        assertEquals(
-                "Transaction data not valid",
-                constraintViolations.iterator().next().getMessage()
-        );
+        assertFalse(constraintViolations.isEmpty());
+
+        assertTrue(constraintViolations.stream()
+                .anyMatch(transactionConstraintViolation ->
+                        transactionConstraintViolation.getMessage().equals(TRANSACTION_TIMESTAMP_IS_OLD)));
+    }
+
+    @Test
+    public void transactionIsInTheFutureShouldFailValidation() {
+        Transaction transaction = Transaction.builder()
+                .amount(BigDecimal.valueOf(12.3343))
+                .timestamp(LocalDateTime.now().plusSeconds(30))
+                .build();
+
+        Set<ConstraintViolation<Transaction>> constraintViolations =
+                validator.validate(transaction);
+
+        assertFalse(constraintViolations.isEmpty());
+
+        assertTrue(constraintViolations.stream()
+                .anyMatch(transactionConstraintViolation ->
+                        transactionConstraintViolation.getMessage().equals(TRANSACTION_TIMESTAMP_IS_IN_THE_FUTURE)));
+    }
+
+    @Test
+    public void transaction30SecondsOlderShouldPassValidation() {
+        Transaction transaction = Transaction.builder()
+                .amount(BigDecimal.valueOf(12.3343))
+                .timestamp(LocalDateTime.now().minusSeconds(30))
+                .build();
+
+        Set<ConstraintViolation<Transaction>> constraintViolations =
+                validator.validate(transaction);
+
+        assertTrue(constraintViolations.isEmpty());
     }
 
 }
