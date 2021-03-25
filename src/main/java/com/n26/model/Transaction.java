@@ -25,4 +25,8 @@ public class Transaction {
     @NotNull(message = TRANSACTION_TIMESTAMP_IS_NULL)
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private final LocalDateTime timestamp;
+
+    public boolean shouldBeConsideredForStatistics() {
+        return timestamp.isAfter(LocalDateTime.now().minusSeconds(60));
+    }
 }

@@ -12,16 +12,12 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Set;
 
+import static com.n26.utils.ValidationMessages.*;
 import static org.junit.Assert.*;
 
 public class TransactionValidationTest {
     private static Validator validator;
     private static DateTimeFormatter formatter;
-
-    private final static String TRANSACTION_AMOUNT_IS_NULL = "The transaction amount must be provided";
-    private final static String TRANSACTION_TIMESTAMP_IS_NULL = "The transaction timestamp must be provided";
-    private final static String TRANSACTION_TIMESTAMP_IS_IN_THE_FUTURE = "The transaction timestamp is in the future";
-    private final static String TRANSACTION_TIMESTAMP_IS_OLD = "The transaction timestamp is older than 60 seconds";
 
     @BeforeClass
     public static void setUp() {
