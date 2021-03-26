@@ -2,6 +2,7 @@ package com.n26.model;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.Valid;
@@ -14,6 +15,7 @@ import static com.n26.utils.ValidationMessages.TRANSACTION_TIMESTAMP_IS_NULL;
 
 @Getter
 @Builder
+@ToString
 @ValidTransaction
 public class Transaction {
 

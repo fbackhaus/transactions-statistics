@@ -13,7 +13,7 @@ public class TransactionCleanerCronJob {
 
     private final TransactionsService transactionsService;
 
-    @Scheduled(fixedDelay = 10000)
+    @Scheduled(fixedDelay = 60000)
     public void removeOldTransactions() {
         log.info("Running transaction cleaner cron job");
         long deletedTransactions = transactionsService.deleteOldTransactions();

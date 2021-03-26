@@ -20,19 +20,14 @@ import static com.n26.utils.ValidationMessages.*;
 @Slf4j
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler({
-            HttpMessageNotReadableException.class,
-    })
+    @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<Void> handle(Exception ex) {
-        if (ex.getCause() instanceof InvalidFormatException) {
-            return ResponseEntity.unprocessableEntity().build();
-        }
-        return ResponseEntity.badRequest().build();
+        return (ex.getCause() instanceof InvalidFormatException) ?
+                ResponseEntity.unprocessableEntity().build() :
+                ResponseEntity.badRequest().build();
     }
 
-    @ExceptionHandler({
-            MethodArgumentNotValidException.class,
-    })
+    @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Void> handle(MethodArgumentNotValidException ex) {
         Optional<FieldError> fieldError = Optional.ofNullable(ex.getBindingResult().getFieldError());
 
