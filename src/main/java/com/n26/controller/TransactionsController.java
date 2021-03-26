@@ -21,13 +21,13 @@ public class TransactionsController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Void> createNewTransaction(@Valid @RequestBody Transaction transaction) {
         transactionsService.createTransaction(transaction);
-        return ResponseEntity.accepted().build();
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> deleteAllTransactions() {
-        //TODO: Create DELETE Endpoint
+        transactionsService.deleteTransactions();
         return ResponseEntity.noContent().build();
     }
 }

@@ -26,4 +26,8 @@ public class TransactionsService {
                 .map(Transaction::getAmount)
                 .collect(Collectors.toList());
     }
+
+    public void deleteTransactions() {
+        repository.deleteAll();
+    }
 }

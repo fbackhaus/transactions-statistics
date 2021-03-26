@@ -3,33 +3,31 @@ package com.n26.repository;
 import com.n26.model.Transaction;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Repository
 public class InMemoryTransactionRepository implements TransactionRepository {
 
-    private final ConcurrentMap<LocalDateTime, Transaction> transactionConcurrentMap;
+    private final List<Transaction> transactionList;
 
     public InMemoryTransactionRepository() {
-        this.transactionConcurrentMap = new ConcurrentHashMap<>();
+        this.transactionList = new CopyOnWriteArrayList<>();
     }
 
     @Override
     public void save(Transaction entity) {
-        transactionConcurrentMap.put(entity.getTimestamp(), entity);
+        transactionList.add(entity);
     }
 
     @Override
     public List<Transaction> getTransactions() {
-        return new ArrayList<>(transactionConcurrentMap.values());
+        return new ArrayList<>(transactionList);
     }
 
     @Override
     public void deleteAll() {
-        transactionConcurrentMap.clear();
+        transactionList.clear();
     }
 }
