@@ -52,6 +52,31 @@ public class TransactionsServiceTest {
         thenTheTransactionListShouldHaveAllElements();
     }
 
+    @Test
+    public void deletesTransactionsWhenThe60SecondsExpire() throws InterruptedException {
+        givenAListOfValidTransactions();
+
+        long deletedTransactions = transactionsService.deleteOldTransactions();
+        theFirstTimeNoTransactionsNeededDeletion(deletedTransactions);
+
+        waitFor5Seconds();
+
+        deletedTransactions = transactionsService.deleteOldTransactions();
+        theSecondTimeAllTransactionsWereDeleted(deletedTransactions);
+    }
+
+    private void theSecondTimeAllTransactionsWereDeleted(long deletedTransactions) {
+        Assert.assertEquals(3, deletedTransactions);
+    }
+
+    private void waitFor5Seconds() throws InterruptedException {
+        Thread.sleep(5000);
+    }
+
+    private void theFirstTimeNoTransactionsNeededDeletion(long deletedTransactions) {
+        Assert.assertEquals(0, deletedTransactions);
+    }
+
     private void thenTheTransactionListIsEmpty() {
         Assert.assertTrue(transactionAmounts.isEmpty());
     }
@@ -104,15 +129,15 @@ public class TransactionsServiceTest {
 
         transactionList.add(getTransaction(
                 BigDecimal.TEN,
-                LocalDateTime.now().minusSeconds(15)));
+                LocalDateTime.now().minusSeconds(58)));
 
         transactionList.add(getTransaction(
                 BigDecimal.TEN,
-                LocalDateTime.now().minusSeconds(10)));
+                LocalDateTime.now().minusSeconds(57)));
 
         transactionList.add(getTransaction(
                 BigDecimal.TEN,
-                LocalDateTime.now().minusSeconds(35)));
+                LocalDateTime.now().minusSeconds(56)));
 
         when(repository.getTransactions()).thenReturn(transactionList);
     }

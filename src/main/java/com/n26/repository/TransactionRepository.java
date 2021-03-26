@@ -11,4 +11,6 @@ public interface TransactionRepository {
     List<Transaction> getTransactions();
 
     void deleteAll();
+
+    void remove(List<Transaction> transactions);
 }

@@ -30,4 +30,18 @@ public class TransactionsService {
     public void deleteTransactions() {
         repository.deleteAll();
     }
+
+    public long deleteOldTransactions() {
+        List<Transaction> transactionsToRemove = repository
+                .getTransactions()
+                .stream()
+                .filter(transaction -> !transaction.shouldBeConsideredForStatistics())
+                .collect(Collectors.toList());
+
+        if (!transactionsToRemove.isEmpty()) {
+            repository.remove(transactionsToRemove);
+        }
+
+        return transactionsToRemove.size();
+    }
 }

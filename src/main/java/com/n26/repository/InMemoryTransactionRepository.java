@@ -30,4 +30,9 @@ public class InMemoryTransactionRepository implements TransactionRepository {
     public void deleteAll() {
         transactionList.clear();
     }
+
+    @Override
+    public void remove(List<Transaction> transactions) {
+        transactionList.removeAll(transactions);
+    }
 }
